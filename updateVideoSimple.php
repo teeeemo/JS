@@ -1,10 +1,11 @@
 <?php
 header('Access-Control-Allow-Origin:*');
 $name = htmlspecialchars($_POST['name']);
+$id = 12138;
 
 $file = explode('.', $name)[1];
 //限制只能上传MP4
-if (! in_array($file, ['mp4'])) {
+if (!in_array($file, ['mp4'])) {
 	return false;
 }
 
@@ -15,15 +16,16 @@ $dir = "{$time}/";
 $file_name = $dir . $name;
 
 $dir_name = $time ."/". $name;
-if(!is_dir($dir))
-{
+if (!is_dir($dir)) {
     mkdir($dir, 0777,true);
 }
-if(!file_exists($file_name)){ //第一次收到上传的分割文件
+if (!file_exists($file_name)) { 
+    //第一次收到上传的分割文件
     move_uploaded_file($_FILES['fragment']['tmp_name'], $file_name);
-}else{ //如果文件已存在,即文件至少第二次被分割上传至此
+} else {
+    //如果文件已存在,即文件至少第二次被分割上传至此
     file_put_contents($file_name, file_get_contents($_FILES['fragment']['tmp_name']) ,FILE_APPEND);
-} //参数FI
+}
 
 //写入数据库
 if (isset($_POST['isok'])) {
