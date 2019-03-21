@@ -147,7 +147,7 @@
 
     function up(fd){
         //采用同步上传防止文件写入时顺序出错
-        xhr.open('POST','http://pc.test.com/updateVideoSimple.php',false);//本地域名
+        xhr.open('POST','http://pc.test.com/updateVideoSimple.php',false);//处理文件脚本路径
         xhr.send(fd);
     }
 </script>
