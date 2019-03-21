@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>checkImage</title>
+	<script src="http://libs.baidu.com/jquery/2.0.0/jquery.js"></script>
+	<style type="text/css">
+		#par{width: 500px; height: 30px;border: 1px solid #000;margin:20px; border-radius:20px; line-height:36px; overflow: hidden}
+		#sub{width: 0;height: 100%;background-color:green;color:#fff;text-align:center}
+	</style>
+</head>
+<body>
+
+<div>
+	<span>图片：</span>
+	<input class="c_in_text upload_cover" name="cover_image" type="file" data-url="" />
+    <a class="btnC" href="javascript:;" onclick='coverUpload();'><em>上传图片</em></a>
+</div>
+<div>
+	<span>视频：</span>
+	<input type="file" name='file' />
+   	<a class="btnC" href="javascript:;" onclick='videoUpload();'><em>上传视频</em></a>
+</div>
+<div id='par'>
+    <div id='sub'></div>
+</div>
+<script type="text/javascript">
+	// 检测上传文件是否为图片
+	function coverUpload() {
+		var file = $(".upload_cover")[0].files[0];
+        if (file) {
+            var reader = new FileReader();
+	        var AllowImgFileSize = 2100000; //上传图片最大值(单位字节)（ 2 M = 2097152 B ）超过2M上传失败
+	        var imgUrlBase64 = reader.readAsDataURL(file); //将文件以Data URL形式读入页面  
+            reader.onload = function (e) {
+                var data = e.target.result;
+                //加载图片获取图片真实宽度和高度
+                var image = new Image();
+                image.onerror = function(){
+                    alert('非标准图片');
+                };
+
+                image.onload = function(){
+                    alert('标准图片');
+                    //执行上传操作 base64
+                    reader.result;
+                }
+                image.src= data;
+            }
+        } else {
+        	alert('请上传图片');
+        }
+	}
+
+	// 检测上传文件是否为视频 并且上传到服务器
+	var isClick = false;
+	function videoUpload() {
+		if(isClick) {
+            alert('正在加载，请稍等');
+            return false;
+        }
+        isClick = true;
+		var file = document.getElementsByName('file')[0].files[0];
+        var reader = new FileReader();
+        var imgUrlBase64 = reader.readAsDataURL(file);
+        reader.onload = function (e) {
+            var data = e.target.result;
+            var video = document.createElement('video');
+            video.onload = function() {
+                alert('！！！');
+            };
+            video.onerror = function() {
+                isClick = false;
+                alert('请上传标准视频格式');
+                return;
+            };
+            video.src = data;
+            video.oncanplaythrough = function() {
+            	// 这个回调会比较慢
+            	isClick = false;
+                alert('标准视频格式');
+                window.setInterval(upfile,1000); //每一秒触发一次upfile函数
+            };
+        } 
+	}
+
+	//跨域上传视频
+	var xhr = new XMLHttpRequest();
+    var clock = null;
+    var isClick = false;
+	//视频切片上传
+	var LENGTH = 5 * 1024 * 1024; //定义每一次分割的文件的大小
+    var start = 0;
+    var end = start+LENGTH;
+    var fd = null;
+    var flag = false; //flag标志当前是否有文件在上传中
+    var percent = 0;
+    var upfile = function(){
+        
+        /*如果有文件在上传则不进行操作,因为上次没传完就开始下次时会导致合并的文件衔接不上*/
+        if(flag == true){
+            return;
+        }
+        var file = document.getElementsByName('file')[0].files[0];
+        //这个验证可以不要
+        if (typeof file == "undefined") {
+            isClick = false;
+            clearInterval(clock);
+            alert('请选择上传的视频！')
+            return false;
+        }
+        
+        if(start>=file.size){ //所有分块上传完成跳出函数清除计数器
+            isClick = false;
+            clearInterval(clock);
+            //上传结束可以重新加载页面，也可以跳转
+            //window.location.reload(); 
+            return;
+        }
+
+        blob = file.slice(start,end); //每10M分割一次文件
+        var name = '123456789.' + file.name.split('.')[1]; //文件名
+        fd = new FormData();
+        fd.append('fragment',blob);
+        fd.append('name', name);
+
+        //up(fd);
+        /*监听上传过程,定时器触发upfile函数时若是flag为true则不进行操作以免文件上传合并的时候出问题*/
+        xhr.upload.onprogress = function(ev){
+            if(ev.loaded<LENGTH){
+                flag = true;
+            }
+        }
+        percent = 100 * end / file.size;
+        if(percent>=100){
+            percent = 100;
+            fd.append('isok', "1");
+        }
+        document.getElementById('sub').style.width = percent + '%';
+        document.getElementById('sub').innerHTML = parseInt(percent)+ '%';
+
+        start = end;
+        end = start + LENGTH ;
+        flag = false; //当前分块上传完成,flag置false
+
+        up(fd);
+    };
+
+    function up(fd){
+        //采用同步上传防止文件写入时顺序出错
+        //xhr.open('POST','http://pcm.darryring.com/updateVideoSimple.php',false);
+        //xhr.send(fd);
+    }
+</script>
+</body>
+</html>
