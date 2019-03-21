@@ -27,28 +27,28 @@
 	// 检测上传文件是否为图片
 	function coverUpload() {
 		var file = $(".upload_cover")[0].files[0];
-        if (file) {
-            var reader = new FileReader();
-	        var AllowImgFileSize = 2100000; //上传图片最大值(单位字节)（ 2 M = 2097152 B ）超过2M上传失败
-	        var imgUrlBase64 = reader.readAsDataURL(file); //将文件以Data URL形式读入页面  
-            reader.onload = function (e) {
-                var data = e.target.result;
-                //加载图片获取图片真实宽度和高度
-                var image = new Image();
-                image.onerror = function(){
-                    alert('非标准图片');
-                };
+		if (file) {
+		    var reader = new FileReader();
+			var AllowImgFileSize = 2100000; //上传图片最大值(单位字节)（ 2 M = 2097152 B ）超过2M上传失败
+			var imgUrlBase64 = reader.readAsDataURL(file); //将文件以Data URL形式读入页面  
+		    reader.onload = function (e) {
+			var data = e.target.result;
+			//加载图片获取图片真实宽度和高度
+			var image = new Image();
+			image.onerror = function(){
+			    alert('非标准图片');
+			};
 
-                image.onload = function(){
-                    alert('标准图片');
-                    //执行上传操作 base64
-                    reader.result;
-                }
-                image.src= data;
-            }
-        } else {
-        	alert('请上传图片');
-        }
+			image.onload = function(){
+			    alert('标准图片');
+			    //执行上传操作 base64
+			    reader.result;
+			}
+			image.src= data;
+		    }
+		} else {
+			alert('请上传图片');
+		}
 	}
 
 	// 检测上传文件是否为视频 并且上传到服务器
@@ -85,16 +85,16 @@
 
 	//跨域上传视频
 	var xhr = new XMLHttpRequest();
-    var clock = null;
-    var isClick = false;
+    	var clock = null;
+    	var isClick = false;
 	//视频切片上传
 	var LENGTH = 5 * 1024 * 1024; //定义每一次分割的文件的大小
-    var start = 0;
-    var end = start+LENGTH;
-    var fd = null;
-    var flag = false; //flag标志当前是否有文件在上传中
-    var percent = 0;
-    var upfile = function(){
+    	var start = 0;
+    	var end = start+LENGTH;
+    	var fd = null;
+    	var flag = false; //flag标志当前是否有文件在上传中
+    	var percent = 0;
+    	var upfile = function(){
         
         /*如果有文件在上传则不进行操作,因为上次没传完就开始下次时会导致合并的文件衔接不上*/
         if(flag == true){
@@ -147,8 +147,8 @@
 
     function up(fd){
         //采用同步上传防止文件写入时顺序出错
-        //xhr.open('POST','http://pcm.darryring.com/updateVideoSimple.php',false);
-        //xhr.send(fd);
+        xhr.open('POST','http://pc.test.com/updateVideoSimple.php',false);//本地域名
+        xhr.send(fd);
     }
 </script>
 </body>
