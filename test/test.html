@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>上传测试</title>
+    <style type="text/css">
+		#par{width: 500px; height: 30px;border: 1px solid #000;margin:20px; border-radius:20px; line-height:36px; overflow: hidden}
+		#sub{width: 0;height: 100%;background-color:green;color:#fff;text-align:center}
+	</style>
+</head>
+<body>
+    <div>
+        <span>图片：</span>
+        <input class="upload_cover" name="cover_image" type="file" data-url="" />
+        <a class="btnC" href="javascript:;" onclick='coverUpload();'><em>上传图片</em></a>
+    </div>
+    <div>
+        <span>视频：</span>
+        <input class="upload_file" type="file" name='file' />
+            <a class="btnC" href="javascript:;" onclick='videoUpload();'><em>上传视频</em></a>
+    </div>
+    <div id='par'>
+        <div id='sub'></div>
+    </div>
+
+    <script src="http://libs.baidu.com/jquery/2.0.0/jquery.js"></script>
+    <script src="../dev/bundle.js"></script>
+    <script type="text/javascript">
+        var adbUpload = new AdbUpload();
+
+        function coverUpload() {
+            var file = $(".upload_cover")[0].files[0];
+            adbUpload.uploadImage(file, function() {
+                console.log('上传成功');
+            }, function(result) {
+                console.log('上传失败, 错误: ', result);
+            });
+        }
+
+        function videoUpload() {
+            var file = $(".upload_file")[0].files[0];
+            adbUpload.uploadVideo(file, function() {
+                console.log('上传成功');
+            }, function(result) {
+                console.log('上传失败, 错误: ', result);
+            });
+        }
+    </script>
+</body>
+</html>
